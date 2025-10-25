@@ -17,6 +17,7 @@ Tech stack:
 ## Features
 
 - Aggregate owned collections from multiple BGG usernames
+- **Share links with pre-loaded usernames** using URL parameters (e.g., `?users=user1,user2,user3`)
 - Filter by player count, play time, complexity, and minimum rating
 - Sort by name, rating, rank, complexity, playing time, or number of owners
 - Built-in retry/backoff and a 1 rps rate limiter for BGG XML API2
@@ -45,6 +46,16 @@ npm run preview
 
 Open http://localhost:5173/ in your browser, add a few BGG usernames, and use the filters.
 
+## Sharing Collections
+
+You can share a link with pre-loaded usernames by adding them to the URL as a comma-separated list:
+
+```
+https://akamu84.github.io/bgg-collection-aggregator/?users=username1,username2,username3
+```
+
+When someone opens the link, the specified usernames will automatically be loaded and their collections aggregated. The URL updates automatically as you add or remove usernames, making it easy to share your current view.
+
 ## Deployment (GitHub Pages)
 
 This repo is set up to auto-deploy to GitHub Pages via Actions on every push to `main`.
@@ -53,15 +64,18 @@ This repo is set up to auto-deploy to GitHub Pages via Actions on every push to 
 - Workflow: `.github/workflows/deploy.yml`
 
 Notes:
+
 - Vite `base` is configured to `/bgg-collection-aggregator/` so assets resolve under the project subpath.
 - TanStack Router uses `basepath: import.meta.env.BASE_URL` so client-side routing works under the subpath.
 - SPA fallback is handled by copying `index.html` to `404.html` during the build step.
 
 First-time setup (one-time):
+
 1. In GitHub → Repo Settings → Pages, set Source to “GitHub Actions”.
 2. Push to `main` (or re-run the deploy workflow) to publish.
 
 Manual deploy trigger:
+
 1. Make any change and push to `main`, or use “Re-run jobs” on the last workflow run.
 
 ## Forms

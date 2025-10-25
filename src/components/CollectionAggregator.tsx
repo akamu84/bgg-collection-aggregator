@@ -15,6 +15,7 @@ import {
 } from "@mantine/core";
 import { useState, useEffect } from "react";
 import { useForm } from "@tanstack/react-form";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useAggregatedCollections } from "../hooks/useBGGData";
 import type { FilterState } from "../types/bgg.types";
 import FilterPanel from "./FilterPanel";
@@ -50,6 +51,9 @@ import { filterGames, sortGames } from "../utils/filtering";
 const USERNAMES_STORAGE_KEY = "bgg-aggregator-usernames";
 
 export default function CollectionAggregator() {
+  const navigate = useNavigate({ from: "/" });
+  const search = useSearch({ from: "/" });
+  
   // TanStack Form for username input
   const usernameForm = useForm({
     defaultValues: { username: "" },
@@ -59,7 +63,13 @@ export default function CollectionAggregator() {
   });
   const [usernameError, setUsernameError] = useState<string>("");
   const [usernames, setUsernames] = useState<string[]>(() => {
-    // Initialize from localStorage
+    // First check URL params, then localStorage
+    if (search.users) {
+      const usersFromUrl = search.users.split(',').map(u => u.trim()).filter(Boolean);
+      if (usersFromUrl.length > 0) {
+        return usersFromUrl;
+      }
+    }
     try {
       const saved = localStorage.getItem(USERNAMES_STORAGE_KEY);
       return saved ? JSON.parse(saved) : [];
@@ -69,6 +79,15 @@ export default function CollectionAggregator() {
   });
   const [filters, setFilters] = useState<FilterState>({});
   const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Update URL when usernames change
+  useEffect(() => {
+    const usersParam = usernames.length > 0 ? usernames.join(',') : undefined;
+    navigate({
+      search: (prev) => ({ ...prev, users: usersParam }),
+      replace: true,
+    });
+  }, [usernames, navigate]);
 
   // Persist usernames to localStorage whenever they change
   useEffect(() => {

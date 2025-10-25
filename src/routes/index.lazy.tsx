@@ -1,6 +1,6 @@
-import { createLazyFileRoute } from '@tanstack/react-router';
-import CollectionAggregator from '../components/CollectionAggregator';
+import { createLazyFileRoute } from "@tanstack/react-router";
+import CollectionAggregator from "../components/CollectionAggregator";
 
-export const Route = createLazyFileRoute('/')({
+export const Route = createLazyFileRoute("/")({
   component: CollectionAggregator,
 });
