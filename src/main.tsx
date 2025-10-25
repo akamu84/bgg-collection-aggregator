@@ -9,6 +9,8 @@ import "@mantine/core/styles.css";
 
 const router = createRouter({
   routeTree,
+  // Ensure links and routing work when hosted at a subpath (e.g., GitHub Pages)
+  basepath: import.meta.env.BASE_URL,
 });
 
 declare module "@tanstack/react-router" {
