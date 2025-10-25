@@ -106,15 +106,45 @@ export default function CollectionAggregator() {
 
   return (
     <Container size="xl" py="xl">
-      <Stack>
-        <Group justify="space-between">
-          <Title order={2}>BGG Collection Aggregator</Title>
-        </Group>
-
-        <Stack>
-          <Text c="dimmed">
-            Enter BoardGameGeek usernames to combine their owned collections.
+      <Stack gap="xl">
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "2rem",
+            paddingTop: "1rem",
+          }}
+        >
+          <Title
+            order={1}
+            size="3rem"
+            mb="sm"
+            style={{
+              background:
+                "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            BGG Collection Aggregator
+          </Title>
+          <Text size="lg" c="dimmed" maw={600} mx="auto">
+            Enter BoardGameGeek usernames to combine their owned collections
           </Text>
+        </div>
+
+        <Stack
+          gap="lg"
+          p="xl"
+          style={{
+            background:
+              "linear-gradient(145deg, rgba(37, 38, 43, 0.6) 0%, rgba(37, 38, 43, 0.4) 100%)",
+            borderRadius: "16px",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+          }}
+        >
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -128,18 +158,48 @@ export default function CollectionAggregator() {
                 children={(field) => (
                   <TextInput
                     label="Username"
+                    radius="md"
                     placeholder="e.g. tomvasel"
                     value={(field.state.value as string | undefined) ?? ""}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onBlur={field.handleBlur}
                     w={300}
+                    styles={{
+                      input: {
+                        backgroundColor: "rgba(0, 0, 0, 0.3)",
+                        borderColor: "rgba(255, 255, 255, 0.1)",
+                        fontSize: "1rem",
+                      },
+                    }}
                   />
                 )}
               />
-              <Button type="submit">Add</Button>
+              <Button
+                type="submit"
+                size="md"
+                radius="md"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 10px 20px rgba(102, 126, 234, 0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "";
+                }}
+              >
+                Add
+              </Button>
               {usernames.length > 0 && (
                 <Button
                   variant="light"
+                  size="md"
+                  radius="md"
                   onClick={() => refetch()}
                   disabled={isFetching}
                 >
@@ -150,13 +210,21 @@ export default function CollectionAggregator() {
           </form>
 
           {usernames.length > 0 && (
-            <Group>
+            <Group gap="sm">
               {usernames.map((name) => (
                 <Badge
                   key={name}
+                  size="lg"
+                  radius="md"
                   color={getStableColor(name)}
+                  variant="light"
+                  style={{
+                    paddingRight: "8px",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                  }}
                   rightSection={
                     <CloseButton
+                      size="xs"
                       onClick={() => removeUsername(name)}
                       aria-label={`Remove ${name}`}
                     />
@@ -169,7 +237,7 @@ export default function CollectionAggregator() {
           )}
         </Stack>
 
-        <Group align="flex-start" wrap="nowrap">
+        <Group align="flex-start" wrap="nowrap" gap="lg">
           <div style={{ width: 320, flex: "0 0 auto" }}>
             <FilterPanel
               filters={filters}
@@ -178,31 +246,47 @@ export default function CollectionAggregator() {
             />
           </div>
 
-          <Stack style={{ flex: 1 }}>
+          <Stack style={{ flex: 1 }} gap="lg">
             {isLoading && (
-              <Group>
-                <Loader />
-                <Text>Loading collections...</Text>
+              <Group
+                justify="center"
+                p="xl"
+                style={{
+                  background: "rgba(37, 38, 43, 0.5)",
+                  borderRadius: "12px",
+                }}
+              >
+                <Loader size="lg" />
+                <Text size="lg">Loading collections...</Text>
               </Group>
             )}
 
             {error && (
-              <Alert color="red" title="Error fetching collections">
+              <Alert
+                color="red"
+                title="Error fetching collections"
+                radius="md"
+                style={{
+                  border: "1px solid rgba(250, 82, 82, 0.3)",
+                }}
+              >
                 {error instanceof Error ? error.message : "Unknown error"}
               </Alert>
             )}
 
             {!isLoading && usernames.length === 0 && (
-              <Text c="dimmed">Add at least one username to begin.</Text>
+              <Text c="dimmed" size="lg" ta="center" p="xl">
+                Add at least one username to begin
+              </Text>
             )}
 
             {!isLoading && usernames.length > 0 && (
-              <Text size="sm" c="dimmed">
+              <Text size="sm" c="dimmed" px="xs">
                 {filtered.length} of {games.length} games match filters
               </Text>
             )}
 
-            <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="md">
+            <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg">
               {sorted.map((game) => (
                 <GameCard key={game.id} game={game} />
               ))}

@@ -10,28 +10,59 @@ export default function GameCard({ game }: GameCardProps) {
 
   return (
     <Card
-      shadow="sm"
+      shadow="lg"
       padding="lg"
-      radius="md"
-      withBorder
+      radius="lg"
       component="a"
       href={bggUrl}
       target="_blank"
       rel="noopener noreferrer"
-      style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}
+      style={{
+        textDecoration: "none",
+        color: "inherit",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        background:
+          "linear-gradient(145deg, rgba(37, 38, 43, 0.7) 0%, rgba(37, 38, 43, 0.5) 100%)",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-8px)";
+        e.currentTarget.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.4)";
+        e.currentTarget.style.borderColor = "rgba(102, 126, 234, 0.5)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "";
+        e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
+      }}
     >
-      <Card.Section>
+      <Card.Section style={{ position: "relative", overflow: "hidden" }}>
         {game.thumbnail ? (
-          <Image
-            src={game.thumbnail}
-            height={160}
-            alt={game.name}
-            fit="cover"
-            style={{
-              backgroundColor: "#f5f5f5",
-              objectPosition: "top",
-            }}
-          />
+          <>
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background:
+                  "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%)",
+                zIndex: 1,
+              }}
+            />
+            <Image
+              src={game.thumbnail}
+              height={160}
+              alt={game.name}
+              fit="cover"
+              style={{
+                backgroundColor: "#2a2b30",
+                objectPosition: "top",
+              }}
+            />
+          </>
         ) : (
           <div
             style={{
@@ -39,7 +70,7 @@ export default function GameCard({ game }: GameCardProps) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "#f5f5f5",
+              background: "linear-gradient(135deg, #434343 0%, #2a2b30 100%)",
             }}
           >
             <Text c="dimmed">No Image</Text>
@@ -48,14 +79,22 @@ export default function GameCard({ game }: GameCardProps) {
       </Card.Section>
 
       <Stack gap="xs" mt="md">
-        <Text fw={500} size="lg" lineClamp={2}>
+        <Text fw={600} size="lg" lineClamp={2} style={{ minHeight: "3.5rem" }}>
           {game.name}
         </Text>
 
         <Group gap="xs" wrap="wrap">
           {game.minPlayers !== undefined && game.maxPlayers !== undefined && (
             <Tooltip label="Player Count">
-              <Badge color="blue" variant="outline">
+              <Badge
+                color="blue"
+                variant="light"
+                radius="md"
+                style={{
+                  background: "rgba(34, 139, 230, 0.1)",
+                  border: "1px solid rgba(34, 139, 230, 0.3)",
+                }}
+              >
                 👥{" "}
                 {game.minPlayers === game.maxPlayers
                   ? game.minPlayers
@@ -66,7 +105,15 @@ export default function GameCard({ game }: GameCardProps) {
 
           {game.playingTime !== undefined && game.playingTime > 0 && (
             <Tooltip label="Playing Time">
-              <Badge color="red" variant="outline">
+              <Badge
+                color="red"
+                variant="light"
+                radius="md"
+                style={{
+                  background: "rgba(250, 82, 82, 0.1)",
+                  border: "1px solid rgba(250, 82, 82, 0.3)",
+                }}
+              >
                 ⏱️ {game.playingTime}min
               </Badge>
             </Tooltip>
@@ -74,7 +121,15 @@ export default function GameCard({ game }: GameCardProps) {
 
           {game.complexity !== undefined && (
             <Tooltip label="Complexity (1-5)">
-              <Badge color="green" variant="outline">
+              <Badge
+                color="green"
+                variant="light"
+                radius="md"
+                style={{
+                  background: "rgba(64, 192, 87, 0.1)",
+                  border: "1px solid rgba(64, 192, 87, 0.3)",
+                }}
+              >
                 🧩 {game.complexity.toFixed(1)}
               </Badge>
             </Tooltip>
@@ -82,7 +137,15 @@ export default function GameCard({ game }: GameCardProps) {
 
           {game.rating !== undefined && (
             <Tooltip label="BGG Rating">
-              <Badge color="yellow" variant="outline">
+              <Badge
+                color="yellow"
+                variant="light"
+                radius="md"
+                style={{
+                  background: "rgba(250, 176, 5, 0.1)",
+                  border: "1px solid rgba(250, 176, 5, 0.3)",
+                }}
+              >
                 ⭐ {game.rating.toFixed(1)}
               </Badge>
             </Tooltip>
@@ -90,7 +153,7 @@ export default function GameCard({ game }: GameCardProps) {
         </Group>
 
         {game.owners.length > 0 && (
-          <Text size="sm" c="dimmed">
+          <Text size="sm" c="dimmed" mt="xs">
             Owned by: {game.owners.join(", ")}
           </Text>
         )}

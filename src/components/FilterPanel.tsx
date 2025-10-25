@@ -39,7 +39,17 @@ export default function FilterPanel({
   }, [filters, form]);
 
   return (
-    <Paper shadow="sm" p="md" withBorder>
+    <Paper
+      shadow="xl"
+      p="lg"
+      radius="lg"
+      style={{
+        background:
+          "linear-gradient(145deg, rgba(37, 38, 43, 0.95) 0%, rgba(37, 38, 43, 0.85) 100%)",
+        backdropFilter: "blur(10px)",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+      }}
+    >
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -47,14 +57,24 @@ export default function FilterPanel({
           void form.handleSubmit();
         }}
       >
-        <Stack gap="md">
-          <Group justify="space-between">
-            <Text size="lg" fw={600}>
+        <Stack gap="lg">
+          <Group justify="space-between" mb="xs">
+            <Text
+              size="xl"
+              fw={700}
+              style={{
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
               Filters
             </Text>
             <Button
               size="xs"
-              variant="subtle"
+              variant="light"
+              radius="md"
               onClick={() => {
                 // Reset only filter fields; keep sort controls unchanged to preserve behavior
                 form.setFieldValue("search", undefined as unknown as string);
@@ -92,6 +112,7 @@ export default function FilterPanel({
               children={(field) => (
                 <Select
                   label="Sort by"
+                  radius="md"
                   data={[
                     { value: "name", label: "Name" },
                     { value: "rating", label: "Rating" },
@@ -113,6 +134,12 @@ export default function FilterPanel({
                   onBlur={field.handleBlur}
                   allowDeselect={false}
                   w={180}
+                  styles={{
+                    input: {
+                      backgroundColor: "rgba(0, 0, 0, 0.2)",
+                      borderColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                  }}
                 />
               )}
             />
@@ -121,6 +148,7 @@ export default function FilterPanel({
               children={(field) => (
                 <Select
                   label="Order"
+                  radius="md"
                   data={[
                     { value: "asc", label: "Ascending" },
                     { value: "desc", label: "Descending" },
@@ -138,6 +166,12 @@ export default function FilterPanel({
                   onBlur={field.handleBlur}
                   allowDeselect={false}
                   w={150}
+                  styles={{
+                    input: {
+                      backgroundColor: "rgba(0, 0, 0, 0.2)",
+                      borderColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                  }}
                 />
               )}
             />
@@ -148,6 +182,7 @@ export default function FilterPanel({
             children={(field) => (
               <TextInput
                 label="Search"
+                radius="md"
                 placeholder="Search by name..."
                 value={(field.state.value as string | undefined) ?? ""}
                 onChange={(e) => {
@@ -158,6 +193,12 @@ export default function FilterPanel({
                   });
                 }}
                 onBlur={field.handleBlur}
+                styles={{
+                  input: {
+                    backgroundColor: "rgba(0, 0, 0, 0.2)",
+                    borderColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
               />
             )}
           />
@@ -171,6 +212,7 @@ export default function FilterPanel({
               children={(field) => (
                 <NumberInput
                   label="Number of Players"
+                  radius="md"
                   placeholder="e.g. 4"
                   min={1}
                   max={20}
@@ -181,6 +223,12 @@ export default function FilterPanel({
                     onChange({ ...form.state.values, playerCount: val });
                   }}
                   onBlur={field.handleBlur}
+                  styles={{
+                    input: {
+                      backgroundColor: "rgba(0, 0, 0, 0.2)",
+                      borderColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                  }}
                 />
               )}
             />
@@ -196,6 +244,7 @@ export default function FilterPanel({
                 children={(field) => (
                   <NumberInput
                     label="Min"
+                    radius="md"
                     placeholder="Min"
                     min={0}
                     step={15}
@@ -208,6 +257,12 @@ export default function FilterPanel({
                       onChange({ ...form.state.values, minPlayTime: val });
                     }}
                     onBlur={field.handleBlur}
+                    styles={{
+                      input: {
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        borderColor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
                   />
                 )}
               />
@@ -216,6 +271,7 @@ export default function FilterPanel({
                 children={(field) => (
                   <NumberInput
                     label="Max"
+                    radius="md"
                     placeholder="Max"
                     min={0}
                     step={15}
@@ -228,6 +284,12 @@ export default function FilterPanel({
                       onChange({ ...form.state.values, maxPlayTime: val });
                     }}
                     onBlur={field.handleBlur}
+                    styles={{
+                      input: {
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        borderColor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
                   />
                 )}
               />
@@ -244,6 +306,7 @@ export default function FilterPanel({
                 children={(field) => (
                   <NumberInput
                     label="Min"
+                    radius="md"
                     placeholder="Min"
                     min={1}
                     max={5}
@@ -258,6 +321,12 @@ export default function FilterPanel({
                       onChange({ ...form.state.values, minComplexity: val });
                     }}
                     onBlur={field.handleBlur}
+                    styles={{
+                      input: {
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        borderColor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
                   />
                 )}
               />
@@ -266,6 +335,7 @@ export default function FilterPanel({
                 children={(field) => (
                   <NumberInput
                     label="Max"
+                    radius="md"
                     placeholder="Max"
                     min={1}
                     max={5}
@@ -280,6 +350,12 @@ export default function FilterPanel({
                       onChange({ ...form.state.values, maxComplexity: val });
                     }}
                     onBlur={field.handleBlur}
+                    styles={{
+                      input: {
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        borderColor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
                   />
                 )}
               />
@@ -291,6 +367,7 @@ export default function FilterPanel({
             children={(field) => (
               <NumberInput
                 label="Minimum Rating"
+                radius="md"
                 placeholder="Min BGG rating"
                 min={0}
                 max={10}
@@ -303,6 +380,12 @@ export default function FilterPanel({
                   onChange({ ...form.state.values, minRating: val });
                 }}
                 onBlur={field.handleBlur}
+                styles={{
+                  input: {
+                    backgroundColor: "rgba(0, 0, 0, 0.2)",
+                    borderColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
               />
             )}
           />
