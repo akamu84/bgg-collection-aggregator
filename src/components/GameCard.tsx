@@ -6,8 +6,20 @@ interface GameCardProps {
 }
 
 export default function GameCard({ game }: GameCardProps) {
+  const bggUrl = `https://boardgamegeek.com/boardgame/${game.id}`;
+
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
+      component="a"
+      href={bggUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}
+    >
       <Card.Section>
         {game.thumbnail ? (
           <Image

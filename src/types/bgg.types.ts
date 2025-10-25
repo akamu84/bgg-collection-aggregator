@@ -70,7 +70,7 @@ export interface BGGThing {
     name: string;
     title: string;
     totalvotes: string;
-    results?: any;
+    results?: unknown;
   }>;
   link?: Array<{
     type: string;
@@ -142,6 +142,8 @@ export interface FilterState {
   maxComplexity?: number;
   minRating?: number;
   search?: string;
+  sortBy?: "name" | "rating" | "rank" | "complexity" | "playingTime" | "owners";
+  sortOrder?: "asc" | "desc";
 }
 
 // Collection Response

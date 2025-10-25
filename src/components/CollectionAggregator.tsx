@@ -9,11 +9,11 @@ import {
   Badge,
   CloseButton,
   SimpleGrid,
-  Select,
   Loader,
   Alert,
 } from "@mantine/core";
 import { useState, useEffect } from "react";
+import { useForm } from "@tanstack/react-form";
 import { useAggregatedCollections } from "../hooks/useBGGData";
 import type { FilterState } from "../types/bgg.types";
 import FilterPanel from "./FilterPanel";
@@ -48,7 +48,13 @@ import { filterGames, sortGames } from "../utils/filtering";
 const USERNAMES_STORAGE_KEY = "bgg-aggregator-usernames";
 
 export default function CollectionAggregator() {
-  const [usernameInput, setUsernameInput] = useState("");
+  // TanStack Form for username input
+  const usernameForm = useForm({
+    defaultValues: { username: "" },
+    onSubmit: ({ value }) => {
+      addUsername(value.username?.trim() ?? "");
+    },
+  });
   const [usernames, setUsernames] = useState<string[]>(() => {
     // Initialize from localStorage
     try {
@@ -59,10 +65,6 @@ export default function CollectionAggregator() {
     }
   });
   const [filters, setFilters] = useState<FilterState>({});
-  const [sortBy, setSortBy] = useState<
-    "name" | "rating" | "rank" | "complexity" | "playingTime" | "owners"
-  >("name");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Persist usernames to localStorage whenever they change
   useEffect(() => {
@@ -77,12 +79,14 @@ export default function CollectionAggregator() {
     refetch,
   } = useAggregatedCollections(usernames);
 
-  const addUsername = () => {
-    const cleaned = usernameInput.trim();
+  const addUsername = (nameFromArg?: string) => {
+    const raw = nameFromArg ?? usernameForm.state.values.username ?? "";
+    const cleaned = raw.trim();
     if (!cleaned) return;
     if (usernames.includes(cleaned)) return;
     setUsernames((prev) => [...prev, cleaned]);
-    setUsernameInput("");
+    // Reset the form field after adding
+    usernameForm.reset({ username: "" });
   };
 
   const removeUsername = (name: string) => {
@@ -90,69 +94,60 @@ export default function CollectionAggregator() {
   };
 
   const filtered = filterGames(games, filters);
-  const sorted = sortGames(filtered, sortBy, sortOrder);
+  const currentSortBy = (filters.sortBy ?? "name") as
+    | "name"
+    | "rating"
+    | "rank"
+    | "complexity"
+    | "playingTime"
+    | "owners";
+  const currentSortOrder = (filters.sortOrder ?? "asc") as "asc" | "desc";
+  const sorted = sortGames(filtered, currentSortBy, currentSortOrder);
 
   return (
     <Container size="xl" py="xl">
       <Stack>
         <Group justify="space-between">
           <Title order={2}>BGG Collection Aggregator</Title>
-          <Group>
-            <Select
-              label="Sort by"
-              data={[
-                { value: "name", label: "Name" },
-                { value: "rating", label: "Rating" },
-                { value: "rank", label: "Rank" },
-                { value: "complexity", label: "Complexity" },
-                { value: "playingTime", label: "Playing time" },
-                { value: "owners", label: "Owners" },
-              ]}
-              value={sortBy}
-              onChange={(v) => setSortBy((v as typeof sortBy) ?? "name")}
-              allowDeselect={false}
-              w={180}
-            />
-            <Select
-              label="Order"
-              data={[
-                { value: "asc", label: "Ascending" },
-                { value: "desc", label: "Descending" },
-              ]}
-              value={sortOrder}
-              onChange={(v) => setSortOrder((v as typeof sortOrder) ?? "asc")}
-              allowDeselect={false}
-              w={150}
-            />
-          </Group>
         </Group>
 
         <Stack>
           <Text c="dimmed">
             Enter BoardGameGeek usernames to combine their owned collections.
           </Text>
-          <Group align="flex-end">
-            <TextInput
-              label="Username"
-              placeholder="e.g. tomvasel"
-              value={usernameInput}
-              onChange={(e) => setUsernameInput(e.currentTarget.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") addUsername();
-              }}
-              w={300}
-            />
-            <Button onClick={addUsername}>Add</Button>
-            {usernames.length > 0 && (
-              <Button
-                variant="light"
-                onClick={() => refetch()}
-                disabled={isFetching}
-              >
-                Refresh
-              </Button>
-            )}
-          </Group>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void usernameForm.handleSubmit();
+            }}
+          >
+            <Group align="flex-end">
+              <usernameForm.Field
+                name="username"
+                children={(field) => (
+                  <TextInput
+                    label="Username"
+                    placeholder="e.g. tomvasel"
+                    value={(field.state.value as string | undefined) ?? ""}
+                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onBlur={field.handleBlur}
+                    w={300}
+                  />
+                )}
+              />
+              <Button type="submit">Add</Button>
+              {usernames.length > 0 && (
+                <Button
+                  variant="light"
+                  onClick={() => refetch()}
+                  disabled={isFetching}
+                >
+                  Refresh
+                </Button>
+              )}
+            </Group>
+          </form>
 
           {usernames.length > 0 && (
             <Group>
