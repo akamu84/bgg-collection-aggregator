@@ -38,7 +38,7 @@ export default function GameCard({ game }: GameCardProps) {
       }}
     >
       <Card.Section style={{ position: "relative", overflow: "hidden" }}>
-        {game.thumbnail ? (
+        {game.image || game.thumbnail ? (
           <>
             <div
               style={{
@@ -53,13 +53,12 @@ export default function GameCard({ game }: GameCardProps) {
               }}
             />
             <Image
-              src={game.thumbnail}
+              src={game.image || game.thumbnail}
               height={160}
               alt={game.name}
-              fit="cover"
+              fit="contain"
               style={{
                 backgroundColor: "#2a2b30",
-                objectPosition: "top",
               }}
             />
           </>

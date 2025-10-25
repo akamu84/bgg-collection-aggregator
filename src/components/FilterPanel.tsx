@@ -106,76 +106,73 @@ export default function FilterPanel({
             </Button>
           </Group>
 
-          <Group>
-            <form.Field
-              name="sortBy"
-              children={(field) => (
-                <Select
-                  label="Sort by"
-                  radius="md"
-                  data={[
-                    { value: "name", label: "Name" },
-                    { value: "rating", label: "Rating" },
-                    { value: "rank", label: "Rank" },
-                    { value: "complexity", label: "Complexity" },
-                    { value: "playingTime", label: "Playing time" },
-                    { value: "owners", label: "Owners" },
-                  ]}
-                  value={(field.state.value as string | undefined) ?? "name"}
-                  onChange={(v) => {
-                    (field.handleChange as unknown as (val: unknown) => void)(
-                      v ?? "name"
-                    );
-                    onChange({
-                      ...form.state.values,
-                      sortBy: (v as FilterState["sortBy"]) ?? "name",
-                    });
-                  }}
-                  onBlur={field.handleBlur}
-                  allowDeselect={false}
-                  w={180}
-                  styles={{
-                    input: {
-                      backgroundColor: "rgba(0, 0, 0, 0.2)",
-                      borderColor: "rgba(255, 255, 255, 0.1)",
-                    },
-                  }}
-                />
-              )}
-            />
-            <form.Field
-              name="sortOrder"
-              children={(field) => (
-                <Select
-                  label="Order"
-                  radius="md"
-                  data={[
-                    { value: "asc", label: "Ascending" },
-                    { value: "desc", label: "Descending" },
-                  ]}
-                  value={(field.state.value as string | undefined) ?? "asc"}
-                  onChange={(v) => {
-                    (field.handleChange as unknown as (val: unknown) => void)(
-                      v ?? "asc"
-                    );
-                    onChange({
-                      ...form.state.values,
-                      sortOrder: (v as FilterState["sortOrder"]) ?? "asc",
-                    });
-                  }}
-                  onBlur={field.handleBlur}
-                  allowDeselect={false}
-                  w={150}
-                  styles={{
-                    input: {
-                      backgroundColor: "rgba(0, 0, 0, 0.2)",
-                      borderColor: "rgba(255, 255, 255, 0.1)",
-                    },
-                  }}
-                />
-              )}
-            />
-          </Group>
+          <form.Field
+            name="sortBy"
+            children={(field) => (
+              <Select
+                label="Sort by"
+                radius="md"
+                data={[
+                  { value: "name", label: "Name" },
+                  { value: "rating", label: "Rating" },
+                  { value: "rank", label: "Rank" },
+                  { value: "complexity", label: "Complexity" },
+                  { value: "playingTime", label: "Playing time" },
+                  { value: "owners", label: "Owners" },
+                ]}
+                value={(field.state.value as string | undefined) ?? "name"}
+                onChange={(v) => {
+                  (field.handleChange as unknown as (val: unknown) => void)(
+                    v ?? "name"
+                  );
+                  onChange({
+                    ...form.state.values,
+                    sortBy: (v as FilterState["sortBy"]) ?? "name",
+                  });
+                }}
+                onBlur={field.handleBlur}
+                allowDeselect={false}
+                styles={{
+                  input: {
+                    backgroundColor: "rgba(0, 0, 0, 0.2)",
+                    borderColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+              />
+            )}
+          />
+
+          <form.Field
+            name="sortOrder"
+            children={(field) => (
+              <Select
+                label="Order"
+                radius="md"
+                data={[
+                  { value: "asc", label: "Ascending" },
+                  { value: "desc", label: "Descending" },
+                ]}
+                value={(field.state.value as string | undefined) ?? "asc"}
+                onChange={(v) => {
+                  (field.handleChange as unknown as (val: unknown) => void)(
+                    v ?? "asc"
+                  );
+                  onChange({
+                    ...form.state.values,
+                    sortOrder: (v as FilterState["sortOrder"]) ?? "asc",
+                  });
+                }}
+                onBlur={field.handleBlur}
+                allowDeselect={false}
+                styles={{
+                  input: {
+                    backgroundColor: "rgba(0, 0, 0, 0.2)",
+                    borderColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                }}
+              />
+            )}
+          />
 
           <form.Field
             name="search"

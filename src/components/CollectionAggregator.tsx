@@ -11,6 +11,7 @@ import {
   SimpleGrid,
   Loader,
   Alert,
+  ActionIcon,
 } from "@mantine/core";
 import { useState, useEffect } from "react";
 import { useForm } from "@tanstack/react-form";
@@ -65,11 +66,25 @@ export default function CollectionAggregator() {
     }
   });
   const [filters, setFilters] = useState<FilterState>({});
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Persist usernames to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem(USERNAMES_STORAGE_KEY, JSON.stringify(usernames));
   }, [usernames]);
+
+  // Show/hide back to top button based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 300);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const {
     data: games = [],
@@ -237,8 +252,8 @@ export default function CollectionAggregator() {
           )}
         </Stack>
 
-        <Group align="flex-start" wrap="nowrap" gap="lg">
-          <div style={{ width: 320, flex: "0 0 auto" }}>
+        <Group align="flex-start" wrap="wrap" gap="lg">
+          <div style={{ width: "100%", flex: "1 1 100%", maxWidth: "100%" }}>
             <FilterPanel
               filters={filters}
               onChange={setFilters}
@@ -246,7 +261,7 @@ export default function CollectionAggregator() {
             />
           </div>
 
-          <Stack style={{ flex: 1 }} gap="lg">
+          <Stack style={{ flex: "1 1 100%", minWidth: 0 }} gap="lg">
             {isLoading && (
               <Group
                 justify="center"
@@ -294,6 +309,51 @@ export default function CollectionAggregator() {
           </Stack>
         </Group>
       </Stack>
+
+      {showBackToTop && (
+        <ActionIcon
+          size="xl"
+          radius="xl"
+          variant="filled"
+          onClick={scrollToTop}
+          style={{
+            position: "fixed",
+            bottom: "2rem",
+            right: "2rem",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
+            transition: "all 0.3s ease",
+            zIndex: 1000,
+            width: "56px",
+            height: "56px",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-4px)";
+            e.currentTarget.style.boxShadow =
+              "0 8px 20px rgba(102, 126, 234, 0.5)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow =
+              "0 4px 12px rgba(102, 126, 234, 0.4)";
+          }}
+          aria-label="Back to top"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 19V5M5 12l7-7 7 7" />
+          </svg>
+        </ActionIcon>
+      )}
     </Container>
   );
 }
