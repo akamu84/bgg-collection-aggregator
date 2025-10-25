@@ -19,6 +19,7 @@ import { useAggregatedCollections } from "../hooks/useBGGData";
 import type { FilterState } from "../types/bgg.types";
 import FilterPanel from "./FilterPanel";
 import GameCard from "./GameCard";
+import { bggApiClient } from "../api/bggClient";
 
 const getStableColor = (text: string) => {
   const colors = [
@@ -56,6 +57,7 @@ export default function CollectionAggregator() {
       addUsername(value.username?.trim() ?? "");
     },
   });
+  const [usernameError, setUsernameError] = useState<string>("");
   const [usernames, setUsernames] = useState<string[]>(() => {
     // Initialize from localStorage
     try {
@@ -94,14 +96,57 @@ export default function CollectionAggregator() {
     refetch,
   } = useAggregatedCollections(usernames);
 
-  const addUsername = (nameFromArg?: string) => {
+  useEffect(() => {
+    if (
+      error &&
+      typeof error === "object" &&
+      error instanceof Error &&
+      error.message.includes("do not exist on BoardGameGeek")
+    ) {
+      setUsernameError("One or more usernames do not exist on BoardGameGeek.");
+    }
+  }, [error]);
+
+  // Simple username validation: must be alphanumeric, 3-20 chars
+  const isValidUsername = (name: string) => /^[a-zA-Z0-9_-]{3,20}$/.test(name);
+
+  const addUsername = async (nameFromArg?: string) => {
     const raw = nameFromArg ?? usernameForm.state.values.username ?? "";
     const cleaned = raw.trim();
-    if (!cleaned) return;
-    if (usernames.includes(cleaned)) return;
-    setUsernames((prev) => [...prev, cleaned]);
-    // Reset the form field after adding
-    usernameForm.reset({ username: "" });
+    setUsernameError("");
+    if (!cleaned) {
+      setUsernameError("Username cannot be empty.");
+      return;
+    }
+    if (!isValidUsername(cleaned)) {
+      setUsernameError(
+        "Invalid username. Only 3-20 letters, numbers, underscores, or hyphens allowed."
+      );
+      return;
+    }
+    if (usernames.includes(cleaned)) {
+      setUsernameError("Username already added.");
+      return;
+    }
+    // Check existence in BGG API before adding
+    try {
+      await bggApiClient.getUserCollection(cleaned);
+      setUsernames((prev) => [...prev, cleaned]);
+      usernameForm.reset({ username: "" });
+    } catch (err) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        (("code" in err &&
+          (err as { code?: string }).code === "INVALID_USERNAME") ||
+          ("name" in err &&
+            (err as { name?: string }).name === "InvalidUsernameError"))
+      ) {
+        setUsernameError("Username does not exist on BoardGameGeek.");
+        return;
+      }
+      setUsernameError("Error checking username. Please try again.");
+    }
   };
 
   const removeUsername = (name: string) => {
@@ -161,10 +206,10 @@ export default function CollectionAggregator() {
           }}
         >
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               e.stopPropagation();
-              void usernameForm.handleSubmit();
+              await addUsername();
             }}
           >
             <Group align="flex-end">
@@ -176,9 +221,13 @@ export default function CollectionAggregator() {
                     radius="md"
                     placeholder="e.g. tomvasel"
                     value={(field.state.value as string | undefined) ?? ""}
-                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onChange={(e) => {
+                      field.handleChange(e.currentTarget.value);
+                      setUsernameError("");
+                    }}
                     onBlur={field.handleBlur}
                     w={300}
+                    error={usernameError || undefined}
                     styles={{
                       input: {
                         backgroundColor: "rgba(0, 0, 0, 0.3)",

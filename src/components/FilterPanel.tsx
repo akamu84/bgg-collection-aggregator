@@ -164,128 +164,131 @@ export default function FilterPanel({
           <Collapse in={!collapsed} role="region" id={contentId}>
             <Stack gap="lg">
               <form.Field
-            name="sortBy"
-            children={(field) => (
-              <Select
-                label="Sort by"
-                radius="md"
-                data={[
-                  { value: "name", label: "Name" },
-                  { value: "rating", label: "Rating" },
-                  { value: "rank", label: "Rank" },
-                  { value: "complexity", label: "Complexity" },
-                  { value: "playingTime", label: "Playing time" },
-                  { value: "owners", label: "Owners" },
-                ]}
-                value={(field.state.value as string | undefined) ?? "name"}
-                onChange={(v) => {
-                  (field.handleChange as unknown as (val: unknown) => void)(
-                    v ?? "name"
-                  );
-                  onChange({
-                    ...form.state.values,
-                    sortBy: (v as FilterState["sortBy"]) ?? "name",
-                  });
-                }}
-                onBlur={field.handleBlur}
-                allowDeselect={false}
-                styles={{
-                  input: {
-                    backgroundColor: "rgba(0, 0, 0, 0.2)",
-                    borderColor: "rgba(255, 255, 255, 0.1)",
-                  },
-                }}
+                name="sortBy"
+                children={(field) => (
+                  <Select
+                    label="Sort by"
+                    radius="md"
+                    data={[
+                      { value: "name", label: "Name" },
+                      { value: "rating", label: "Rating" },
+                      { value: "rank", label: "Rank" },
+                      { value: "complexity", label: "Complexity" },
+                      { value: "playingTime", label: "Playing time" },
+                      { value: "owners", label: "Owners" },
+                    ]}
+                    value={(field.state.value as string | undefined) ?? "name"}
+                    onChange={(v) => {
+                      (field.handleChange as unknown as (val: unknown) => void)(
+                        v ?? "name"
+                      );
+                      onChange({
+                        ...form.state.values,
+                        sortBy: (v as FilterState["sortBy"]) ?? "name",
+                      });
+                    }}
+                    onBlur={field.handleBlur}
+                    allowDeselect={false}
+                    styles={{
+                      input: {
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        borderColor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
+                  />
+                )}
               />
-            )}
-          />
 
               <form.Field
-            name="sortOrder"
-            children={(field) => (
-              <Select
-                label="Order"
-                radius="md"
-                data={[
-                  { value: "asc", label: "Ascending" },
-                  { value: "desc", label: "Descending" },
-                ]}
-                value={(field.state.value as string | undefined) ?? "asc"}
-                onChange={(v) => {
-                  (field.handleChange as unknown as (val: unknown) => void)(
-                    v ?? "asc"
-                  );
-                  onChange({
-                    ...form.state.values,
-                    sortOrder: (v as FilterState["sortOrder"]) ?? "asc",
-                  });
-                }}
-                onBlur={field.handleBlur}
-                allowDeselect={false}
-                styles={{
-                  input: {
-                    backgroundColor: "rgba(0, 0, 0, 0.2)",
-                    borderColor: "rgba(255, 255, 255, 0.1)",
-                  },
-                }}
+                name="sortOrder"
+                children={(field) => (
+                  <Select
+                    label="Order"
+                    radius="md"
+                    data={[
+                      { value: "asc", label: "Ascending" },
+                      { value: "desc", label: "Descending" },
+                    ]}
+                    value={(field.state.value as string | undefined) ?? "asc"}
+                    onChange={(v) => {
+                      (field.handleChange as unknown as (val: unknown) => void)(
+                        v ?? "asc"
+                      );
+                      onChange({
+                        ...form.state.values,
+                        sortOrder: (v as FilterState["sortOrder"]) ?? "asc",
+                      });
+                    }}
+                    onBlur={field.handleBlur}
+                    allowDeselect={false}
+                    styles={{
+                      input: {
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        borderColor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
+                  />
+                )}
               />
-            )}
-          />
 
               <form.Field
-            name="search"
-            children={(field) => (
-              <TextInput
-                label="Search"
-                radius="md"
-                placeholder="Search by name..."
-                value={(field.state.value as string | undefined) ?? ""}
-                onChange={(e) => {
-                  field.handleChange(e.currentTarget.value);
-                  onChange({
-                    ...form.state.values,
-                    search: e.currentTarget.value,
-                  });
-                }}
-                onBlur={field.handleBlur}
-                styles={{
-                  input: {
-                    backgroundColor: "rgba(0, 0, 0, 0.2)",
-                    borderColor: "rgba(255, 255, 255, 0.1)",
-                  },
-                }}
+                name="search"
+                children={(field) => (
+                  <TextInput
+                    label="Search"
+                    radius="md"
+                    placeholder="Search by name..."
+                    value={(field.state.value as string | undefined) ?? ""}
+                    onChange={(e) => {
+                      field.handleChange(e.currentTarget.value);
+                      onChange({
+                        ...form.state.values,
+                        search: e.currentTarget.value,
+                      });
+                    }}
+                    onBlur={field.handleBlur}
+                    styles={{
+                      input: {
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        borderColor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
+                  />
+                )}
               />
-            )}
-          />
 
               <div>
                 <Text size="sm" fw={500} mb="xs">
                   Player Count
                 </Text>
                 <form.Field
-              name="playerCount"
-              children={(field) => (
-                <NumberInput
-                  label="Number of Players"
-                  radius="md"
-                  placeholder="e.g. 4"
-                  min={1}
-                  max={20}
-                  value={(field.state.value as number | undefined) ?? undefined}
-                  onChange={(value) => {
-                    const val = typeof value === "number" ? value : undefined;
-                    field.handleChange(val);
-                    onChange({ ...form.state.values, playerCount: val });
-                  }}
-                  onBlur={field.handleBlur}
-                  styles={{
-                    input: {
-                      backgroundColor: "rgba(0, 0, 0, 0.2)",
-                      borderColor: "rgba(255, 255, 255, 0.1)",
-                    },
-                  }}
+                  name="playerCount"
+                  children={(field) => (
+                    <NumberInput
+                      label="Number of Players"
+                      radius="md"
+                      placeholder="e.g. 4"
+                      min={1}
+                      max={20}
+                      value={
+                        (field.state.value as number | undefined) ?? undefined
+                      }
+                      onChange={(value) => {
+                        const val =
+                          typeof value === "number" ? value : undefined;
+                        field.handleChange(val);
+                        onChange({ ...form.state.values, playerCount: val });
+                      }}
+                      onBlur={field.handleBlur}
+                      styles={{
+                        input: {
+                          backgroundColor: "rgba(0, 0, 0, 0.2)",
+                          borderColor: "rgba(255, 255, 255, 0.1)",
+                        },
+                      }}
+                    />
+                  )}
                 />
-              )}
-            />
               </div>
 
               <div>
@@ -294,59 +297,61 @@ export default function FilterPanel({
                 </Text>
                 <Group grow>
                   <form.Field
-                name="minPlayTime"
-                children={(field) => (
-                  <NumberInput
-                    label="Min"
-                    radius="md"
-                    placeholder="Min"
-                    min={0}
-                    step={15}
-                    value={
-                      (field.state.value as number | undefined) ?? undefined
-                    }
-                    onChange={(value) => {
-                      const val = typeof value === "number" ? value : undefined;
-                      field.handleChange(val);
-                      onChange({ ...form.state.values, minPlayTime: val });
-                    }}
-                    onBlur={field.handleBlur}
-                    styles={{
-                      input: {
-                        backgroundColor: "rgba(0, 0, 0, 0.2)",
-                        borderColor: "rgba(255, 255, 255, 0.1)",
-                      },
-                    }}
+                    name="minPlayTime"
+                    children={(field) => (
+                      <NumberInput
+                        label="Min"
+                        radius="md"
+                        placeholder="Min"
+                        min={0}
+                        step={15}
+                        value={
+                          (field.state.value as number | undefined) ?? undefined
+                        }
+                        onChange={(value) => {
+                          const val =
+                            typeof value === "number" ? value : undefined;
+                          field.handleChange(val);
+                          onChange({ ...form.state.values, minPlayTime: val });
+                        }}
+                        onBlur={field.handleBlur}
+                        styles={{
+                          input: {
+                            backgroundColor: "rgba(0, 0, 0, 0.2)",
+                            borderColor: "rgba(255, 255, 255, 0.1)",
+                          },
+                        }}
+                      />
+                    )}
                   />
-                )}
-              />
                   <form.Field
-                name="maxPlayTime"
-                children={(field) => (
-                  <NumberInput
-                    label="Max"
-                    radius="md"
-                    placeholder="Max"
-                    min={0}
-                    step={15}
-                    value={
-                      (field.state.value as number | undefined) ?? undefined
-                    }
-                    onChange={(value) => {
-                      const val = typeof value === "number" ? value : undefined;
-                      field.handleChange(val);
-                      onChange({ ...form.state.values, maxPlayTime: val });
-                    }}
-                    onBlur={field.handleBlur}
-                    styles={{
-                      input: {
-                        backgroundColor: "rgba(0, 0, 0, 0.2)",
-                        borderColor: "rgba(255, 255, 255, 0.1)",
-                      },
-                    }}
+                    name="maxPlayTime"
+                    children={(field) => (
+                      <NumberInput
+                        label="Max"
+                        radius="md"
+                        placeholder="Max"
+                        min={0}
+                        step={15}
+                        value={
+                          (field.state.value as number | undefined) ?? undefined
+                        }
+                        onChange={(value) => {
+                          const val =
+                            typeof value === "number" ? value : undefined;
+                          field.handleChange(val);
+                          onChange({ ...form.state.values, maxPlayTime: val });
+                        }}
+                        onBlur={field.handleBlur}
+                        styles={{
+                          input: {
+                            backgroundColor: "rgba(0, 0, 0, 0.2)",
+                            borderColor: "rgba(255, 255, 255, 0.1)",
+                          },
+                        }}
+                      />
+                    )}
                   />
-                )}
-              />
                 </Group>
               </div>
 
@@ -356,93 +361,103 @@ export default function FilterPanel({
                 </Text>
                 <Group grow>
                   <form.Field
-                name="minComplexity"
-                children={(field) => (
-                  <NumberInput
-                    label="Min"
-                    radius="md"
-                    placeholder="Min"
-                    min={1}
-                    max={5}
-                    step={0.5}
-                    decimalScale={1}
-                    value={
-                      (field.state.value as number | undefined) ?? undefined
-                    }
-                    onChange={(value) => {
-                      const val = typeof value === "number" ? value : undefined;
-                      field.handleChange(val);
-                      onChange({ ...form.state.values, minComplexity: val });
-                    }}
-                    onBlur={field.handleBlur}
-                    styles={{
-                      input: {
-                        backgroundColor: "rgba(0, 0, 0, 0.2)",
-                        borderColor: "rgba(255, 255, 255, 0.1)",
-                      },
-                    }}
+                    name="minComplexity"
+                    children={(field) => (
+                      <NumberInput
+                        label="Min"
+                        radius="md"
+                        placeholder="Min"
+                        min={1}
+                        max={5}
+                        step={0.5}
+                        decimalScale={1}
+                        value={
+                          (field.state.value as number | undefined) ?? undefined
+                        }
+                        onChange={(value) => {
+                          const val =
+                            typeof value === "number" ? value : undefined;
+                          field.handleChange(val);
+                          onChange({
+                            ...form.state.values,
+                            minComplexity: val,
+                          });
+                        }}
+                        onBlur={field.handleBlur}
+                        styles={{
+                          input: {
+                            backgroundColor: "rgba(0, 0, 0, 0.2)",
+                            borderColor: "rgba(255, 255, 255, 0.1)",
+                          },
+                        }}
+                      />
+                    )}
                   />
-                )}
-              />
                   <form.Field
-                name="maxComplexity"
-                children={(field) => (
-                  <NumberInput
-                    label="Max"
-                    radius="md"
-                    placeholder="Max"
-                    min={1}
-                    max={5}
-                    step={0.5}
-                    decimalScale={1}
-                    value={
-                      (field.state.value as number | undefined) ?? undefined
-                    }
-                    onChange={(value) => {
-                      const val = typeof value === "number" ? value : undefined;
-                      field.handleChange(val);
-                      onChange({ ...form.state.values, maxComplexity: val });
-                    }}
-                    onBlur={field.handleBlur}
-                    styles={{
-                      input: {
-                        backgroundColor: "rgba(0, 0, 0, 0.2)",
-                        borderColor: "rgba(255, 255, 255, 0.1)",
-                      },
-                    }}
+                    name="maxComplexity"
+                    children={(field) => (
+                      <NumberInput
+                        label="Max"
+                        radius="md"
+                        placeholder="Max"
+                        min={1}
+                        max={5}
+                        step={0.5}
+                        decimalScale={1}
+                        value={
+                          (field.state.value as number | undefined) ?? undefined
+                        }
+                        onChange={(value) => {
+                          const val =
+                            typeof value === "number" ? value : undefined;
+                          field.handleChange(val);
+                          onChange({
+                            ...form.state.values,
+                            maxComplexity: val,
+                          });
+                        }}
+                        onBlur={field.handleBlur}
+                        styles={{
+                          input: {
+                            backgroundColor: "rgba(0, 0, 0, 0.2)",
+                            borderColor: "rgba(255, 255, 255, 0.1)",
+                          },
+                        }}
+                      />
+                    )}
                   />
-                )}
-              />
                 </Group>
               </div>
 
               <form.Field
-            name="minRating"
-            children={(field) => (
-              <NumberInput
-                label="Minimum Rating"
-                radius="md"
-                placeholder="Min BGG rating"
-                min={0}
-                max={10}
-                step={0.5}
-                decimalScale={1}
-                value={(field.state.value as number | undefined) ?? undefined}
-                onChange={(value) => {
-                  const val = typeof value === "number" ? value : undefined;
-                  field.handleChange(val);
-                  onChange({ ...form.state.values, minRating: val });
-                }}
-                onBlur={field.handleBlur}
-                styles={{
-                  input: {
-                    backgroundColor: "rgba(0, 0, 0, 0.2)",
-                    borderColor: "rgba(255, 255, 255, 0.1)",
-                  },
-                }}
+                name="minRating"
+                children={(field) => (
+                  <NumberInput
+                    label="Minimum Rating"
+                    radius="md"
+                    placeholder="Min BGG rating"
+                    min={0}
+                    max={10}
+                    step={0.5}
+                    decimalScale={1}
+                    value={
+                      (field.state.value as number | undefined) ?? undefined
+                    }
+                    onChange={(value) => {
+                      const val = typeof value === "number" ? value : undefined;
+                      field.handleChange(val);
+                      onChange({ ...form.state.values, minRating: val });
+                    }}
+                    onBlur={field.handleBlur}
+                    styles={{
+                      input: {
+                        backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        borderColor: "rgba(255, 255, 255, 0.1)",
+                      },
+                    }}
+                  />
+                )}
               />
-            )}
-          />
             </Stack>
           </Collapse>
         </Stack>

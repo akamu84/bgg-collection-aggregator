@@ -3,11 +3,18 @@ import type { AxiosInstance } from "axios";
 import axiosRetry from "axios-retry";
 import { XMLParser } from "fast-xml-parser";
 import type {
-  CollectionResponse,
   ThingResponse,
   BGGCollectionItem,
   BGGThing,
 } from "../types/bgg.types";
+
+class InvalidUsernameError extends Error {
+  code = "INVALID_USERNAME";
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidUsernameError";
+  }
+}
 
 const BGG_API_BASE_URL = import.meta.env.DEV
   ? "/bgg"
@@ -157,7 +164,7 @@ class BGGApiClient {
 
   async getUserCollection(username: string): Promise<BGGCollectionItem[]> {
     try {
-      const response = await this.fetchWithRateLimit<CollectionResponse>(
+      const response = await this.fetchWithRateLimit<Record<string, unknown>>( // XML parsing returns Record<string, unknown>
         "/collection",
         {
           username,
@@ -167,13 +174,27 @@ class BGGApiClient {
         }
       );
 
-      if (!response.items || !response.items.item) return [];
+      // Type assertions for expected XML structure
+      const errorObj = (
+        response.errors as { error?: { message?: string } } | undefined
+      )?.error;
+      if (errorObj && errorObj.message === "Invalid username specified") {
+        throw new InvalidUsernameError("Invalid username specified");
+      }
 
-      const items = Array.isArray(response.items.item)
-        ? response.items.item
-        : [response.items.item];
+      const itemsObj = response.items as
+        | { item?: BGGCollectionItem[] | BGGCollectionItem }
+        | undefined;
+      if (!itemsObj || !itemsObj.item) return [];
+
+      const items = Array.isArray(itemsObj.item)
+        ? itemsObj.item
+        : [itemsObj.item];
       return items;
     } catch (error: unknown) {
+      if (error instanceof InvalidUsernameError) {
+        throw error;
+      }
       const err = error as { response?: { status?: number } };
       if (err?.response?.status === 404) {
         console.warn(`User "${username}" not found or has no collection`);
