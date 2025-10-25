@@ -7,9 +7,11 @@ import {
   Group,
   Button,
   Select,
+  Collapse,
+  ActionIcon,
 } from "@mantine/core";
 import type { FilterState } from "../types/bgg.types";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 
 interface FilterPanelProps {
@@ -32,6 +34,27 @@ export default function FilterPanel({
   });
 
   // (No useEffect for filter syncing; call onChange directly in each field)
+
+  // Collapsible state with localStorage persistence
+  const STORAGE_KEY = "bgg-aggregator-filters-collapsed";
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : false;
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collapsed));
+    } catch {
+      // ignore persistence errors
+    }
+  }, [collapsed]);
+
+  const contentId = useMemo(() => "filters-panel-content", []);
 
   // If external filters prop changes (e.g., reset from parent), sync the form
   useEffect(() => {
@@ -58,19 +81,51 @@ export default function FilterPanel({
         }}
       >
         <Stack gap="lg">
-          <Group justify="space-between" mb="xs">
-            <Text
-              size="xl"
-              fw={700}
-              style={{
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              Filters
-            </Text>
+          <Group justify="space-between" mb="xs" align="center">
+            <Group gap="xs" align="center">
+              <ActionIcon
+                variant="subtle"
+                radius="md"
+                aria-label={collapsed ? "Expand filters" : "Collapse filters"}
+                aria-expanded={!collapsed}
+                aria-controls={contentId}
+                onClick={() => setCollapsed((c) => !c)}
+              >
+                {/* Chevron icon */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{
+                    transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)",
+                    transition: "transform 150ms ease",
+                  }}
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </ActionIcon>
+              <Text
+                size="xl"
+                fw={700}
+                style={{
+                  background:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  userSelect: "none",
+                  cursor: "default",
+                }}
+              >
+                Filters
+              </Text>
+            </Group>
             <Button
               size="xs"
               variant="light"
@@ -106,7 +161,9 @@ export default function FilterPanel({
             </Button>
           </Group>
 
-          <form.Field
+          <Collapse in={!collapsed} role="region" id={contentId}>
+            <Stack gap="lg">
+              <form.Field
             name="sortBy"
             children={(field) => (
               <Select
@@ -142,7 +199,7 @@ export default function FilterPanel({
             )}
           />
 
-          <form.Field
+              <form.Field
             name="sortOrder"
             children={(field) => (
               <Select
@@ -174,7 +231,7 @@ export default function FilterPanel({
             )}
           />
 
-          <form.Field
+              <form.Field
             name="search"
             children={(field) => (
               <TextInput
@@ -200,11 +257,11 @@ export default function FilterPanel({
             )}
           />
 
-          <div>
-            <Text size="sm" fw={500} mb="xs">
-              Player Count
-            </Text>
-            <form.Field
+              <div>
+                <Text size="sm" fw={500} mb="xs">
+                  Player Count
+                </Text>
+                <form.Field
               name="playerCount"
               children={(field) => (
                 <NumberInput
@@ -229,14 +286,14 @@ export default function FilterPanel({
                 />
               )}
             />
-          </div>
+              </div>
 
-          <div>
-            <Text size="sm" fw={500} mb="xs">
-              Play Time (minutes)
-            </Text>
-            <Group grow>
-              <form.Field
+              <div>
+                <Text size="sm" fw={500} mb="xs">
+                  Play Time (minutes)
+                </Text>
+                <Group grow>
+                  <form.Field
                 name="minPlayTime"
                 children={(field) => (
                   <NumberInput
@@ -263,7 +320,7 @@ export default function FilterPanel({
                   />
                 )}
               />
-              <form.Field
+                  <form.Field
                 name="maxPlayTime"
                 children={(field) => (
                   <NumberInput
@@ -290,15 +347,15 @@ export default function FilterPanel({
                   />
                 )}
               />
-            </Group>
-          </div>
+                </Group>
+              </div>
 
-          <div>
-            <Text size="sm" fw={500} mb="xs">
-              Complexity (1-5)
-            </Text>
-            <Group grow>
-              <form.Field
+              <div>
+                <Text size="sm" fw={500} mb="xs">
+                  Complexity (1-5)
+                </Text>
+                <Group grow>
+                  <form.Field
                 name="minComplexity"
                 children={(field) => (
                   <NumberInput
@@ -327,7 +384,7 @@ export default function FilterPanel({
                   />
                 )}
               />
-              <form.Field
+                  <form.Field
                 name="maxComplexity"
                 children={(field) => (
                   <NumberInput
@@ -356,10 +413,10 @@ export default function FilterPanel({
                   />
                 )}
               />
-            </Group>
-          </div>
+                </Group>
+              </div>
 
-          <form.Field
+              <form.Field
             name="minRating"
             children={(field) => (
               <NumberInput
@@ -386,6 +443,8 @@ export default function FilterPanel({
               />
             )}
           />
+            </Stack>
+          </Collapse>
         </Stack>
       </form>
     </Paper>

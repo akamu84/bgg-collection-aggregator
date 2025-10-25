@@ -1,5 +1,7 @@
-import { Card, Image, Text, Badge, Group, Stack, Tooltip } from "@mantine/core";
+import { Card, Text, Badge, Group, Stack, Tooltip } from "@mantine/core";
 import type { GameData } from "../types/bgg.types";
+import { useEffect, useRef, useState } from "react";
+import ColorThief from "colorthief";
 
 interface GameCardProps {
   game: GameData;
@@ -7,6 +9,57 @@ interface GameCardProps {
 
 export default function GameCard({ game }: GameCardProps) {
   const bggUrl = `https://boardgamegeek.com/boardgame/${game.id}`;
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [gradient, setGradient] = useState<string>(
+    "linear-gradient(145deg, rgba(37, 38, 43, 0.7) 0%, rgba(37, 38, 43, 0.5) 100%)"
+  );
+
+  useEffect(() => {
+    if (!game.image && !game.thumbnail) return;
+    // Use a production-grade image proxy for color extraction only
+    const imageUrl = game.image
+      ? game.image
+      : game.thumbnail
+        ? game.thumbnail
+        : "";
+    // images.weserv.nl requires protocol-less URL; fall back to encodeURIComponent if needed
+    const urlNoProtocol = imageUrl.replace(/^https?:\/\//, "");
+    const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(
+      urlNoProtocol
+    )}&w=400&h=400&fit=contain&output=jpg`;
+    const img = new window.Image();
+    img.crossOrigin = "anonymous";
+    img.src = proxyUrl;
+    let cancelled = false;
+    img.onload = () => {
+      if (!cancelled) extractColors(img);
+    };
+    img.onerror = () => {
+      // fallback on error
+      setGradient(
+        "linear-gradient(145deg, rgba(37, 38, 43, 0.7) 0%, rgba(37, 38, 43, 0.5) 100%)"
+      );
+    };
+    function extractColors(image: HTMLImageElement) {
+      try {
+        const colorThief = new ColorThief();
+        const palette = colorThief.getPalette(image, 3);
+        if (palette && palette.length >= 2) {
+          const color1 = `rgb(${palette[0].join(",")})`;
+          const color2 = `rgb(${palette[1].join(",")})`;
+          setGradient(`linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`);
+        }
+      } catch {
+        // fallback
+        setGradient(
+          "linear-gradient(145deg, rgba(37, 38, 43, 0.7) 0%, rgba(37, 38, 43, 0.5) 100%)"
+        );
+      }
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [game.image, game.thumbnail]);
 
   return (
     <Card
@@ -37,7 +90,14 @@ export default function GameCard({ game }: GameCardProps) {
         e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
       }}
     >
-      <Card.Section style={{ position: "relative", overflow: "hidden" }}>
+      <Card.Section
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          // Apply the palette gradient only to the image section
+          background: gradient,
+        }}
+      >
         {game.image || game.thumbnail ? (
           <>
             <div
@@ -52,13 +112,18 @@ export default function GameCard({ game }: GameCardProps) {
                 zIndex: 1,
               }}
             />
-            <Image
+            <img
+              ref={imgRef}
               src={game.image || game.thumbnail}
               height={160}
               alt={game.name}
-              fit="contain"
               style={{
-                backgroundColor: "#2a2b30",
+                width: "100%",
+                objectFit: "contain",
+                backgroundColor: "transparent",
+                zIndex: 2,
+                position: "relative",
+                display: "block",
               }}
             />
           </>
