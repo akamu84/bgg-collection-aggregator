@@ -2,6 +2,10 @@
 
 A React + TypeScript app built with Vite that aggregates multiple BoardGameGeek users' collections and lets you filter by player count, play time, complexity, and more.
 
+[![Deploy static site to GitHub Pages](https://github.com/akamu84/bgg-collection-aggregator/actions/workflows/deploy.yml/badge.svg)](https://github.com/akamu84/bgg-collection-aggregator/actions/workflows/deploy.yml)
+
+Live site: https://akamu84.github.io/bgg-collection-aggregator/
+
 Tech stack:
 
 - TanStack Router (file-based routing with vite plugin)
@@ -40,6 +44,25 @@ npm run preview
 `
 
 Open http://localhost:5173/ in your browser, add a few BGG usernames, and use the filters.
+
+## Deployment (GitHub Pages)
+
+This repo is set up to auto-deploy to GitHub Pages via Actions on every push to `main`.
+
+- Public URL: https://akamu84.github.io/bgg-collection-aggregator/
+- Workflow: `.github/workflows/deploy.yml`
+
+Notes:
+- Vite `base` is configured to `/bgg-collection-aggregator/` so assets resolve under the project subpath.
+- TanStack Router uses `basepath: import.meta.env.BASE_URL` so client-side routing works under the subpath.
+- SPA fallback is handled by copying `index.html` to `404.html` during the build step.
+
+First-time setup (one-time):
+1. In GitHub → Repo Settings → Pages, set Source to “GitHub Actions”.
+2. Push to `main` (or re-run the deploy workflow) to publish.
+
+Manual deploy trigger:
+1. Make any change and push to `main`, or use “Re-run jobs” on the last workflow run.
 
 ## Forms
 
